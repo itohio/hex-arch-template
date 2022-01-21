@@ -1,0 +1,2 @@
+directive @hasScope(scopes: [String]) on OBJECT | FIELD_DEFINITION
+directive @isAuthenticated on OBJECT | FIELD_DEFINITION

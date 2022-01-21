@@ -1,0 +1,7 @@
+input Input {
+  name: String!
+}
+
+type Mutation {
+  helloWorld(input: Input!): String!
+}
