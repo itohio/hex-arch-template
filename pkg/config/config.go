@@ -11,6 +11,12 @@ import (
 )
 
 var (
+	EnvPrefix = "HEX"
+	Version   = "0.1.0"
+	Build     = ""
+)
+
+var (
 	ErrExit = errors.New("Simple exit")
 )
 
@@ -21,6 +27,7 @@ type Config struct {
 	HostName     string
 	FrontEndPath string
 	Server       Server
+	GRPC         GRPC
 	Auth         Auth
 	Db           Db
 	NATS         NATS
@@ -29,7 +36,12 @@ type Config struct {
 type Server struct {
 	Origins []string
 	Host    string
-	Port    int
+	Address string
+}
+
+type GRPC struct {
+	Network string
+	Address string
 }
 
 type Auth struct {
@@ -63,9 +75,13 @@ func isDotEnvPresent() bool {
 }
 
 func New(ctx context.Context) *Config {
+	viper.SetEnvPrefix(EnvPrefix)
+
 	viper.SetDefault("ORIGINS", []string{"localhost", "127.0.0.1"})
 	viper.SetDefault("HOST", "localhost")
-	viper.SetDefault("PORT", 8080)
+	viper.SetDefault("ADDRESS", ":8080")
+	viper.SetDefault("GRPC_NETWORK", "tcp")
+	viper.SetDefault("GRPC_ADDRESS", ":9000")
 
 	return &Config{
 		Context: ctx,
@@ -100,7 +116,11 @@ func (c *Config) parseConfig(v *viper.Viper) error {
 		Server: Server{
 			Origins: v.GetStringSlice("ORIGINS"),
 			Host:    v.GetString("HOST"),
-			Port:    v.GetInt("PORT"),
+			Address: v.GetString("ADDRESS"),
+		},
+		GRPC: GRPC{
+			Network: v.GetString("GRPC_NETWORK"),
+			Address: v.GetString("GRPC_ADDRESS"),
 		},
 		Auth: Auth{
 			Domain:   v.GetString("AUTH0_DOMAIN"),

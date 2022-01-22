@@ -34,11 +34,11 @@ func New(cfg *config.Config, app ports.APIPort) (*Adapter, error) {
 	}, nil
 }
 
-func (a *Adapter) Run() error {
+func (a *Adapter) Run() {
 	topic := fmt.Sprintf("%s.hello", a.cfg.NATS.TopicID)
 	a.nc.Subscribe(topic, func(msg *nats.Msg) {
 		a.nc.Publish(topic, []byte(a.app.SayHello(string(msg.Data))))
 	})
 
-	return nil
+	return
 }

@@ -5,12 +5,11 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"hexarch/pkg/adapters/left/gql/graph/generated"
 )
 
 func (r *queryResolver) Greetings(ctx context.Context) ([]string, error) {
-	panic(fmt.Errorf("not implemented"))
+	return r.Db.GetGreetings(), nil
 }
 
 // Query returns generated.QueryResolver implementation.
