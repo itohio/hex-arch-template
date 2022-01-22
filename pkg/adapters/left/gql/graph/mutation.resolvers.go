@@ -5,13 +5,12 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"hexarch/pkg/adapters/left/gql/graph/generated"
 	"hexarch/pkg/adapters/left/gql/graph/model"
 )
 
 func (r *mutationResolver) HelloWorld(ctx context.Context, input model.Input) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	return r.App.SayHello(input.Name), nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

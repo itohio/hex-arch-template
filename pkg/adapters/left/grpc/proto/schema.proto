@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "./pb";
+
+message Answer {
+  string greeting = 1;
+}
+
+message Input {
+  string name = 1;
+}
+
+service HelloWorld {
+  rpc GetGreeting(Input) returns (Answer) {}
+}

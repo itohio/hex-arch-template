@@ -12,6 +12,13 @@ services:
     volumes:
         - ./tmp/pg:/var/lib/postgresql/data
 
+  nats:
+    image: nats:latest
+    ports:
+      - 6222:6222
+      - 4222:4222
+      - 8222:8222
+
   app:
     build: 
       context: .
@@ -19,13 +26,15 @@ services:
     command:  --verbose --trigger -- go build cmd/helloworld/main.go -- ./main
     env_file: .env
     volumes:
-      - ./pkg:/src/backend
+      - ./pkg:/src/backend/pkg
+      - ./cmd:/src/backend/cmd
     expose:
       - 8080
     ports:
       - 8080:8080
     depends_on:
       - db
+      - nats
 
   spa:
     build: 
@@ -38,7 +47,6 @@ services:
     ports:
       - 3000:8080
     depends_on:
-      - db
       - app
       
   pgadmin:

@@ -20,7 +20,7 @@ import (
 
 func New(cfg *config.Config) http.Handler {
 	goth.UseProviders(
-		auth0.New(cfg.Auth.AuthKey, cfg.Auth.Secret, fmt.Sprintf("http://%s:%d/auth/auth0/callback", cfg.Server.Host, cfg.Server.Port), cfg.Auth.Domain),
+		auth0.New(cfg.Auth.AuthKey, cfg.Auth.Secret, fmt.Sprintf("http://%s/auth/auth0/callback", cfg.Server.Address), cfg.Auth.Domain),
 	)
 
 	router := chi.NewRouter()

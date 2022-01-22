@@ -3,12 +3,12 @@ package gql
 //go:generate gqlgen
 
 import (
-	"fmt"
 	"hexarch/pkg/adapters/left/auth"
 	"hexarch/pkg/adapters/left/gql/graph"
 	"hexarch/pkg/adapters/left/gql/graph/generated"
 	"hexarch/pkg/config"
 	"hexarch/pkg/ports"
+	"net"
 	"net/http"
 	"time"
 
@@ -22,16 +22,24 @@ import (
 type Adapter struct {
 	cfg    *config.Config
 	app    ports.APIPort
+	listen net.Listener
 	router http.Handler
 	routes map[string]http.Handler
 }
 
-func New(cfg *config.Config, app ports.APIPort, routes map[string]http.Handler) *Adapter {
+func New(cfg *config.Config, app ports.APIPort, db ports.DbPort, routes map[string]http.Handler) (*Adapter, error) {
 	ret := &Adapter{
 		cfg:    cfg,
 		app:    app,
 		routes: routes,
 	}
+
+	ln, err := net.Listen("tcp", cfg.Server.Address)
+	if err != nil {
+		return nil, err
+	}
+	ret.listen = ln
+
 	authMiddleware := auth.NewMiddleware(cfg.Server.Host)
 	router := chi.NewRouter()
 	_ = authMiddleware
@@ -39,7 +47,8 @@ func New(cfg *config.Config, app ports.APIPort, routes map[string]http.Handler) 
 		generated.NewExecutableSchema(
 			generated.Config{
 				Resolvers: &graph.Resolver{
-					// Orm: db,
+					App: app,
+					Db:  db,
 				},
 				Directives: generated.DirectiveRoot{
 					IsAuthenticated: IsAuthenticated,
@@ -54,7 +63,7 @@ func New(cfg *config.Config, app ports.APIPort, routes map[string]http.Handler) 
 
 	ret.router = router
 
-	return ret
+	return ret, nil
 }
 
 func (a *Adapter) Run() error {
@@ -72,22 +81,20 @@ func (a *Adapter) Run() error {
 	})
 	router.Use(cors.Handler)
 
-	router.Route("/", func(r chi.Router) {
-		router.Mount("/api", a.router)
-		for k, v := range a.routes {
-			router.Mount(k, v)
-		}
-	})
+	router.Mount("/api", a.router)
+	for k, v := range a.routes {
+		router.Mount(k, v)
+	}
 
 	srv := &http.Server{
 		Handler: router,
-		Addr:    fmt.Sprintf(":%d", a.cfg.Server.Port),
+		Addr:    a.cfg.Server.Address,
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
-	if err := srv.ListenAndServe(); err != nil {
+	if err := srv.Serve(a.listen); err != nil {
 		return err
 	}
 
