@@ -14,5 +14,9 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-# Temporary files created while running docker-compose
+# Node.js files
+node_modules
+
+# Temporary files created/used while running docker-compose
 tmp/
+.env
