@@ -5,6 +5,7 @@ import (
 	"errors"
 	"hexarch/pkg/adapters/left/auth"
 	"hexarch/pkg/adapters/left/gql"
+	"hexarch/pkg/adapters/left/spa"
 	"hexarch/pkg/adapters/right/db"
 	"hexarch/pkg/app/api"
 	"hexarch/pkg/app/core/helloworld"
@@ -35,8 +36,12 @@ func main() {
 	app := api.New(cfg, db, hw)
 
 	// Create left adapters
-	auth := auth.New(cfg)
-	gql := gql.New(cfg, app, map[string]http.Handler{"auth/", auth})
+	authRouter := auth.New(cfg)
+	singlePageApp := spa.New(cfg.FrontEndPath)
+	gql := gql.New(cfg, app, map[string]http.Handler{
+		"auth/": authRouter,
+		"/":     singlePageApp,
+	})
 	go gql.Run()
 
 	c := make(chan os.Signal, 1)
