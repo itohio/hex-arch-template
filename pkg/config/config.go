@@ -145,7 +145,5 @@ func (c *Config) parseConfig(v *viper.Viper) error {
 		},
 	}
 
-	log.Println("Origins ", c.Server.Host, c.HostName, c.Server.Origins)
-
 	return nil
 }
