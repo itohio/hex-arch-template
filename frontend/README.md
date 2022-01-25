@@ -1,1 +1,1 @@
-React/Vue/Etc frontend should go here
+React TypeScript frontend with Auth0 and GraphQL.
