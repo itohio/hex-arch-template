@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -75,9 +76,9 @@ func isDotEnvPresent() bool {
 }
 
 func New(ctx context.Context) *Config {
-	viper.SetEnvPrefix(EnvPrefix)
+	// viper.SetEnvPrefix(EnvPrefix)
 
-	viper.SetDefault("ORIGINS", []string{"localhost", "127.0.0.1"})
+	viper.SetDefault("ORIGINS", "http://localhost:8080,http://localhost:3000")
 	viper.SetDefault("HOST", "localhost")
 	viper.SetDefault("ADDRESS", ":8080")
 	viper.SetDefault("GRPC_NETWORK", "tcp")
@@ -114,7 +115,7 @@ func (c *Config) parseConfig(v *viper.Viper) error {
 		HostName:     v.GetString("HOSTNAME"),
 		FrontEndPath: v.GetString("FRONT_END_PATH"),
 		Server: Server{
-			Origins: v.GetStringSlice("ORIGINS"),
+			Origins: strings.Split(v.GetString("ORIGINS"), ","),
 			Host:    v.GetString("HOST"),
 			Address: v.GetString("ADDRESS"),
 		},
@@ -143,6 +144,8 @@ func (c *Config) parseConfig(v *viper.Viper) error {
 			SSLMode:  v.GetString("DB_SSL_MODE"),
 		},
 	}
+
+	log.Println("Origins ", c.Server.Host, c.HostName, c.Server.Origins)
 
 	return nil
 }

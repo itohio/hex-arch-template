@@ -6,8 +6,8 @@ services:
     expose:
         - 5432
     environment:
-        POSTGRES_USER: $DB_USER
-        POSTGRES_PASSWORD: $DB_PASS
+        POSTGRES_USER: $DB_USERNAME
+        POSTGRES_PASSWORD: $DB_PASSWORD
         POSTGRES_DB: $DB_NAME
     volumes:
         - ./tmp/pg:/var/lib/postgresql/data
@@ -26,8 +26,8 @@ services:
     command:  --verbose --trigger -- go build cmd/helloworld/main.go -- ./main
     env_file: .env
     volumes:
-      - ./pkg:/src/backend/pkg
-      - ./cmd:/src/backend/cmd
+      - ./pkg:/src/pkg
+      - ./cmd:/src/cmd
     expose:
       - 8080
     ports:
@@ -40,12 +40,11 @@ services:
     build: 
       context: .
       dockerfile: frontend/dev.Dockerfile
-    environment:
-      API_URL: http://app:8080/api
+    env_file: .env
     volumes:
       - ./frontend/src:/src/src
     ports:
-      - 3000:8080
+      - 3000:3000
     depends_on:
       - app
       
