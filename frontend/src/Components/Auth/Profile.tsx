@@ -1,17 +1,18 @@
 import React, {useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useGreetings } from '../../gql/query'
+
 
 const Profile = () => {
-  const { user, getAccessTokenSilently, getIdTokenClaims } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
   const [userMetadata, setUserMetadata] = useState("");
+  const { data, loading } = useGreetings();
 
   useEffect(() => {
     const getUserMetadata = async () => {
-      const domain = "YOUR_DOMAIN";
-  
       try {
         const accessToken = await getAccessTokenSilently({
-          audience: `http://localhost:8080/api`,
+          audience: process.env.REACT_APP_AUTH0_AUDIENCE,
           scope: "read:all",
         });
   
@@ -49,6 +50,13 @@ const Profile = () => {
           {JSON.stringify(userMetadata)}
         </pre>
       </div>
+      {loading?(
+        <div className="row">
+        <pre className="col-12 text-light bg-dark p-4">
+          {data?.greetings}
+        </pre>
+      </div>
+      ): (<div></div>)}
     </div>
   );
 };

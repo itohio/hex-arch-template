@@ -2,13 +2,20 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import './index.css';
 import Auth0ProviderWithHistory from './Components/Auth/Provider';
+import ApolloProviderWithAuth0 from './Components/Auth/Apollo';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
 
 ReactDOM.render(
   <React.StrictMode>
     <Auth0ProviderWithHistory>
-      <App />
+      <ApolloProviderWithAuth0>
+        <App />
+      </ApolloProviderWithAuth0>,
     </Auth0ProviderWithHistory>
   </React.StrictMode>,
   document.getElementById('root')

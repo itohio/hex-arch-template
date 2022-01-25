@@ -16,10 +16,10 @@ const Auth0ProviderWithHistory = ({ children }: {children: any}) => {
     <Auth0Provider
       domain={domain}
       clientId={clientId}
-      audience="http://localhost:8080/api"
+      audience={audience}
       scope="read:all"
       redirectUri={window.location.origin}
-      //onRedirectCallback={onRedirectCallback}
+      onRedirectCallback={onRedirectCallback}
     >
       {children}
     </Auth0Provider>

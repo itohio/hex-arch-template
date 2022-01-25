@@ -1,14 +1,13 @@
 import { useAuth0 } from "@auth0/auth0-react";
+import { Button } from "@mui/material";
 
 function LoginButton() {
   const { loginWithRedirect } = useAuth0();
 
-  return <a 
-      href="#0"
-      className="link dib pa2 pv2 color-inherit"
+  return <Button
       onClick={() => loginWithRedirect()}>
         Log In
-    </a>;
+    </Button>;
 };
 
 export default LoginButton;
