@@ -66,16 +66,27 @@ func New(cfg *config.Config, app ports.APIPort, db ports.DbPort, routes map[stri
 	return ret, nil
 }
 
+// func cors(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		w.Header().Set("Access-Control-Allow-Origin", "*")
+// 		w.Header().Set("Access-Control-Allow-Methods", "POST")
+// 		w.Header().Set("Access-Control-Allow-Headers", "*")
+// 		w.Header().Set("Access-Control-Expose-Headers", "Authorization")
+// 		next.ServeHTTP(w, r)
+// 	})
+// }
+
 func (a *Adapter) Run() error {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 
+	// Uncomment if CORS is required
 	cors := cors.New(cors.Options{
 		AllowedOrigins:   a.cfg.Server.Origins,
-		AllowedMethods:   []string{"POST", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
+		ExposedHeaders:   []string{"Link", "Authorization"},
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	})
