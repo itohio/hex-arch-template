@@ -1,0 +1,9 @@
+model:
+  filename: ./gql/models_gen.go
+client:
+  filename: ./gql/client.go
+models:
+schema:
+  - ../../pkg/adapters/left/gql/schema/*.graphqls
+query:  
+   - "./gql/*.graphql"
