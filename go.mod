@@ -4,21 +4,27 @@ go 1.17
 
 require (
 	github.com/99designs/gqlgen v0.15.1
+	github.com/Yamashou/gqlgenc v0.0.2
 	github.com/auth0/go-jwt-middleware v1.0.1
 	github.com/form3tech-oss/jwt-go v3.2.5+incompatible
-	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/chi v3.3.2+incompatible
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/gogo/protobuf v1.3.2
+	github.com/hexops/vecty v0.6.0
+	github.com/machinebox/graphql v0.2.2
 	github.com/markbates/goth v1.69.0
 	github.com/rs/cors v1.8.2
+	github.com/soypat/mdc v0.0.0-20220124143528-cc96ae92de9d
 	github.com/vektah/gqlparser/v2 v2.2.0
 	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
 	google.golang.org/grpc v1.43.0
 	gorm.io/driver/sqlite v1.2.6
+	marwan.io/vecty-router v0.0.0-20200914150808-f30c81f0deb5
 )
 
 require (
 	github.com/agnivade/levenshtein v1.1.0 // indirect
+	github.com/cathalgarvey/fmtless v0.0.0-20160509115409-5077ea938891 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
@@ -40,11 +46,14 @@ require (
 	github.com/jinzhu/now v1.1.4 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
+	github.com/matryer/is v1.4.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.9 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/nats-io/nkeys v0.3.0 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/sanity-io/litter v1.5.2 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
