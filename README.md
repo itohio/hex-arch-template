@@ -34,6 +34,15 @@ Just make sure to rename the app and Go module together with imports.
 ### Vecty
 Vecty is a React-like Web frontend framework that is written completely in Go.
 
+1. In the main.go update Auth instantiation variables (Audience, ClientID, Domain).
+2. Update sitemap, pages, etc.
+3. update `*.graphql` files and run `go generate` to update GraphQL client.
+
+NOTE: It is important to have `AuthPre` and `AuthPost` incapsulating `spa` so that redirects are working properly.
+Components cannot return `mdc` components directly - weird errors happen randomly.
+
+IMPORTANT NOTE: Authentication component and `Auth0` was not battle tested. Use on your own risk.
+
 ### Fyne
 Fyne is a cross-platform GUI framework based on Material Design.
 

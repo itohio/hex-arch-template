@@ -7,17 +7,18 @@ import (
 )
 
 type PageLink struct {
-	Route        string
-	Label        string
-	Description  string
-	Content      func(*GlobalState) vecty.Component
-	Disabled     func(*GlobalState) bool
-	Options      router.LinkOptions
-	RouteOptions router.NewRouteOpts
-	Protected    bool
-	Sidebar      bool
-	Scope        string
-	Children     []PageLink
+	Route          string
+	Label          string
+	Description    string
+	ContentBuilder func(*GlobalState) vecty.Component
+	Content        vecty.Component
+	Disabled       func(*GlobalState) bool
+	Options        router.LinkOptions
+	RouteOptions   router.NewRouteOpts
+	Protected      bool
+	Sidebar        bool
+	Scope          string
+	Children       []PageLink
 }
 
 type SiteMap []PageLink
@@ -26,7 +27,10 @@ func (s SiteMap) TopMenu(state *GlobalState) vecty.List {
 	mainMenu := make(vecty.List, 0, len(s))
 
 	for _, item := range s[1:] {
-		if item.Protected && !state.Authenticated {
+		if item.Label == "" {
+			continue
+		}
+		if item.Protected && !state.Auth.Authenticated() {
 			continue
 		}
 		mainMenu = append(mainMenu, &mdc.ListItem{
@@ -47,10 +51,10 @@ func (s SiteMap) SideBar(state *GlobalState) vecty.List {
 	// TODO: nested
 
 	for _, item := range s[1:] {
-		if !item.Sidebar {
+		if !item.Sidebar || item.Label == "" {
 			continue
 		}
-		if item.Protected && !state.Authenticated {
+		if item.Protected && !state.Auth.Authenticated() {
 			continue
 		}
 		// TODO: match scopes
@@ -73,7 +77,19 @@ func (s SiteMap) Content(state *GlobalState) vecty.List {
 		if item.Content == nil || (item.Disabled != nil && item.Disabled(state)) {
 			continue
 		}
-		content = append(content, router.NewRoute(item.Route, item.Content(state), item.RouteOptions))
+		if item.Content != nil {
+			content = append(content, router.NewRoute(
+				item.Route,
+				item.Content,
+				item.RouteOptions,
+			))
+		} else {
+			content = append(content, router.NewRoute(
+				item.Route,
+				&Page{state: state, builder: item.ContentBuilder},
+				item.RouteOptions,
+			))
+		}
 	}
 	// TODO: nested routes
 

@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/hexops/vecty"
+	"github.com/hexops/vecty/elem"
 	"github.com/soypat/mdc"
 )
 
@@ -14,10 +15,11 @@ type About struct {
 
 func (p *About) Render() vecty.ComponentOrHTML {
 	log.Println("Render About")
-	return &mdc.Typography{Root: vecty.Text("About stuf.")}
+	return elem.Div(
+		&mdc.Typography{Root: vecty.Text("About stuf.")},
+	)
 }
 
 func NewAbout(state *component.GlobalState) vecty.Component {
-	log.Println("NewAbout")
 	return &About{}
 }

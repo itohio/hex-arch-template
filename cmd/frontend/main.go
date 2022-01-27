@@ -3,6 +3,7 @@ package main
 //go:generate gqlgenc
 
 import (
+	"hexarch/cmd/frontend/auth0"
 	"hexarch/cmd/frontend/component"
 	"log"
 
@@ -12,8 +13,13 @@ import (
 )
 
 const (
-	title = "U-Rule"
-	motto = "You are the best. Always have been."
+	title        = "U-Rule"
+	motto        = "You are the best. Always have been."
+	AuthDomain   = "dev-itohio.eu.auth0.com"
+	AuthClientID = "WyLy3saoCf12ArfKrPsGnQlUurVxzqVT"
+	AuthAudience = "http://localhost:8080/api"
+	AuthBaseUrl  = "http://localhost:3000/"
+	AuthScope    = ""
 )
 
 func main() {
@@ -21,21 +27,37 @@ func main() {
 	mdc.AddDefaultStyles()
 	mdc.AddDefaultScripts()
 
-	body := &Body{}
+	body := &Body{state: &globalState}
 	body.state.GlobalListener = func() {
 		vecty.Rerender(body)
 	}
-	body.state.API.Init("http://localhost:8080/api", "")
+	auth, err := auth0.New(
+		auth0.WithDomain(AuthDomain),
+		auth0.WithClientID(AuthClientID),
+		auth0.WithAudience(AuthAudience),
+		auth0.WithRedirectUri(AuthBaseUrl),
+		auth0.WithScope(AuthScope),
+	)
+	if err != nil {
+		panic(err)
+	}
+	body.state.Auth = auth
 	vecty.RenderBody(body)
 }
 
 type Body struct {
 	vecty.Core
-	state component.GlobalState `vecty:"prop"`
+	state *component.GlobalState `vecty:"prop"`
 }
 
 func (b *Body) Render() vecty.ComponentOrHTML {
-	return elem.Body(NewApp(&b.state, siteMap))
+	log.Println("Body render ", b.state.Auth.Authenticated(), b.state.Auth.Token())
+	authPre, authPost := component.NewAuth(b.state, AuthAudience)
+	return elem.Body(
+		authPre,
+		NewApp(b.state, siteMap),
+		authPost,
+	)
 }
 
 func NewApp(state *component.GlobalState, siteMap component.SiteMap) *mdc.SPA {
