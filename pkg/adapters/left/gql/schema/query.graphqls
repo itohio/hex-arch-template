@@ -1,3 +1,10 @@
+type Setup {
+  clientId: String!
+  Audience: String!
+  Domain: String!
+}
+
 type Query {
+  setup: Setup!
   greetings: [String!]!       @isAuthenticated
 }

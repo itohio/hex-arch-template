@@ -5,3 +5,9 @@ package model
 type Input struct {
 	Name string `json:"name"`
 }
+
+type Setup struct {
+	ClientID string `json:"clientId"`
+	Audience string `json:"Audience"`
+	Domain   string `json:"Domain"`
+}

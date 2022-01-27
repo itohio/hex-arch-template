@@ -4,23 +4,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/form3tech-oss/jwt-go"
 )
 
-func NewMiddleware(host string) *jwtmiddleware.JWTMiddleware {
-	domain := fmt.Sprintf("https://%s/", host)
-	audience := fmt.Sprintf("https://%s/api", host)
+func NewMiddleware(domain, audience string, debug bool) *jwtmiddleware.JWTMiddleware {
 	return jwtmiddleware.New(jwtmiddleware.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			log.Println("ValidationKeyGetter")
 			// Verify 'aud' claim
 			checkAud := token.Claims.(jwt.MapClaims).VerifyAudience(audience, false)
 			if !checkAud {
-				return token, errors.New("Invalid audience.")
+				return token, errors.New("Invalid audience. " + audience)
 			}
 			// Verify 'iss' claim
 			checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(domain, false)
@@ -37,7 +33,7 @@ func NewMiddleware(host string) *jwtmiddleware.JWTMiddleware {
 			return result, nil
 		},
 		CredentialsOptional: true,
-		Debug:               true,
+		Debug:               debug,
 
 		// When set, the middleware verifies that tokens are signed with the specific signing algorithm
 		// If the signing method is not constant the ValidationKeyGetter callback can be used to implement additional checks

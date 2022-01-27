@@ -40,13 +40,14 @@ func New(cfg *config.Config, app ports.APIPort, db ports.DbPort, routes map[stri
 	}
 	ret.listen = ln
 
-	authMiddleware := auth.NewMiddleware(cfg.Server.Host)
+	authMiddleware := auth.NewMiddleware(cfg.Auth.Domain, cfg.Auth.Audience, cfg.Debug)
 	router := chi.NewRouter()
 	_ = authMiddleware
 	srv := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
 			generated.Config{
 				Resolvers: &graph.Resolver{
+					Cfg: cfg,
 					App: app,
 					Db:  db,
 				},
