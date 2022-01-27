@@ -36,18 +36,30 @@ services:
       - db
       - nats
 
-  spa:
+  # spa:
+  #   build: 
+  #     context: .
+  #     dockerfile: frontend/dev.Dockerfile
+  #   env_file: .env
+  #   volumes:
+  #     - ./frontend/src:/src/src
+  #   ports:
+  #     - 3000:3000
+  #   depends_on:
+  #     - app
+  
+  spawasm:
     build: 
       context: .
-      dockerfile: frontend/dev.Dockerfile
-    env_file: .env
+      dockerfile: cmd/frontend/dev.Dockerfile
     volumes:
-      - ./frontend/src:/src/src
+      - ./pkg:/src/pkg
+      - ./cmd:/src/cmd
     ports:
       - 3000:3000
     depends_on:
       - app
-      
+
   pgadmin:
     image: dpage/pgadmin4
     restart: always
