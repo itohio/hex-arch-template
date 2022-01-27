@@ -19,18 +19,18 @@ func NewNavbar(state *GlobalState, siteMap SiteMap) *mdc.Navbar {
 
 	loginBtns := vecty.List{}
 
-	if !state.Authenticated {
+	if !state.Auth.Authenticated() {
 		loginBtns = vecty.List{
-			&mdc.ListItem{Label: vecty.Text("Login"), ListItemElem: mdc.ElementAnchorListItem, Href: "/login"},
-			&mdc.ListItem{Label: vecty.Text("Signup"), ListItemElem: mdc.ElementAnchorListItem, Href: "/signin"},
+			&mdc.ListItem{Label: vecty.Text("Login"), ListItemElem: mdc.ElementAnchorListItem, Href: state.Auth.LoginUrl(getpathname())},
+			&mdc.ListItem{Label: vecty.Text("Signup"), ListItemElem: mdc.ElementAnchorListItem, Href: state.Auth.SignupUrl(getpathname())},
 		}
 	} else {
 		loginBtns = vecty.List{
-			&mdc.ListItem{Label: vecty.Text("Logout"), ListItemElem: mdc.ElementAnchorListItem, Href: "/logout"},
+			&mdc.ListItem{Label: vecty.Text("Logout"), ListItemElem: mdc.ElementAnchorListItem, Href: state.Auth.LogoutUrl("#logout")},
 		}
 	}
 
-	return &mdc.Navbar{
+	state.NavBar = &mdc.Navbar{
 		SectionStart: vecty.List{
 			dehaze,
 			&mdc.Typography{
@@ -45,4 +45,5 @@ func NewNavbar(state *GlobalState, siteMap SiteMap) *mdc.Navbar {
 		SectionCenter: siteMap.TopMenu(state),
 		SectionEnd:    loginBtns,
 	}
+	return state.NavBar
 }

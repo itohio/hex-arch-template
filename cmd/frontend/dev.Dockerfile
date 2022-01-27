@@ -3,4 +3,5 @@ RUN go install github.com/hajimehoshi/wasmserve@latest
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
-ENTRYPOINT [ "wasmserve", "-http", $ADDRESS, "-allog-origin", $ORIGINS ]
+WORKDIR /src/cmd/frontend
+ENTRYPOINT [ "wasmserve", "-http", ":3000" ]

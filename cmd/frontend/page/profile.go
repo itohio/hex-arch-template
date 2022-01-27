@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"hexarch/cmd/frontend/component"
+	"hexarch/cmd/frontend/gql"
 	"log"
+	"time"
 
 	"github.com/hexops/vecty"
 	"github.com/hexops/vecty/elem"
@@ -13,16 +15,21 @@ import (
 
 type Profile struct {
 	vecty.Core
-	gState *component.GlobalState `vecty:"prop"`
+	gState  *component.GlobalState `vecty:"prop"`
+	watcher *component.Watcher
+	res     *gql.GetGreetings
+	err     error
 }
 
 func (p *Profile) Render() vecty.ComponentOrHTML {
 	log.Println("Render Profile")
 
+	p.watcher.Watch(1)
+
 	greetings := vecty.List{}
-	res, err := p.gState.Client.GetGreetings(context.Background())
-	if err != nil {
-		greetings = append(greetings, &mdc.ListItem{Label: vecty.Text(fmt.Sprint(err))})
+	res := p.res
+	if p.err != nil {
+		greetings = append(greetings, &mdc.ListItem{Label: vecty.Text(fmt.Sprint(p.err))})
 	} else if res == nil {
 		greetings = append(greetings, &mdc.ListItem{Label: vecty.Text("Result is nil")})
 	} else {
@@ -39,6 +46,19 @@ func (p *Profile) Render() vecty.ComponentOrHTML {
 }
 
 func NewProfile(state *component.GlobalState) vecty.Component {
-	log.Println("NewProfile")
-	return &Profile{gState: state}
+	ret := &Profile{
+		gState: state,
+	}
+	ret.watcher = component.UseWatcher(
+		ret,
+		time.Second*3,
+		func(ctx context.Context) error {
+			log.Println("Request greetings")
+			ret.res, ret.err = state.Client.GetGreetings(ctx)
+			return nil
+		},
+		1,
+	)
+
+	return ret
 }

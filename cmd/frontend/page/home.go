@@ -68,6 +68,5 @@ func (p *Home) Render() vecty.ComponentOrHTML {
 }
 
 func NewHome(state *component.GlobalState) vecty.Component {
-	log.Println("NewHome")
 	return &Home{gState: state}
 }
