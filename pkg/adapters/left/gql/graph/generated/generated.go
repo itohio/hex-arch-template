@@ -52,6 +52,13 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Greetings func(childComplexity int) int
+		Setup     func(childComplexity int) int
+	}
+
+	Setup struct {
+		Audience func(childComplexity int) int
+		ClientID func(childComplexity int) int
+		Domain   func(childComplexity int) int
 	}
 }
 
@@ -59,6 +66,7 @@ type MutationResolver interface {
 	HelloWorld(ctx context.Context, input model.Input) (string, error)
 }
 type QueryResolver interface {
+	Setup(ctx context.Context) (*model.Setup, error)
 	Greetings(ctx context.Context) ([]string, error)
 }
 
@@ -95,6 +103,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Greetings(childComplexity), true
+
+	case "Query.setup":
+		if e.complexity.Query.Setup == nil {
+			break
+		}
+
+		return e.complexity.Query.Setup(childComplexity), true
+
+	case "Setup.Audience":
+		if e.complexity.Setup.Audience == nil {
+			break
+		}
+
+		return e.complexity.Setup.Audience(childComplexity), true
+
+	case "Setup.clientId":
+		if e.complexity.Setup.ClientID == nil {
+			break
+		}
+
+		return e.complexity.Setup.ClientID(childComplexity), true
+
+	case "Setup.Domain":
+		if e.complexity.Setup.Domain == nil {
+			break
+		}
+
+		return e.complexity.Setup.Domain(childComplexity), true
 
 	}
 	return 0, false
@@ -168,7 +204,14 @@ type Mutation {
   helloWorld(input: Input!): String!
 }
 `, BuiltIn: false},
-	{Name: "schema/query.graphqls", Input: `type Query {
+	{Name: "schema/query.graphqls", Input: `type Setup {
+  clientId: String!
+  Audience: String!
+  Domain: String!
+}
+
+type Query {
+  setup: Setup!
   greetings: [String!]!       @isAuthenticated
 }
 `, BuiltIn: false},
@@ -306,6 +349,41 @@ func (ec *executionContext) _Mutation_helloWorld(ctx context.Context, field grap
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_setup(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Setup(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Setup)
+	fc.Result = res
+	return ec.marshalNSetup2ᚖhexarchᚋpkgᚋadaptersᚋleftᚋgqlᚋgraphᚋmodelᚐSetup(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_greetings(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -430,6 +508,111 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Setup_clientId(ctx context.Context, field graphql.CollectedField, obj *model.Setup) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Setup",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ClientID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Setup_Audience(ctx context.Context, field graphql.CollectedField, obj *model.Setup) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Setup",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Audience, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Setup_Domain(ctx context.Context, field graphql.CollectedField, obj *model.Setup) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Setup",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Domain, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -1631,6 +1814,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "setup":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_setup(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "greetings":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -1649,6 +1846,43 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
 			out.Values[i] = ec._Query___schema(ctx, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var setupImplementors = []string{"Setup"}
+
+func (ec *executionContext) _Setup(ctx context.Context, sel ast.SelectionSet, obj *model.Setup) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, setupImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Setup")
+		case "clientId":
+			out.Values[i] = ec._Setup_clientId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "Audience":
+			out.Values[i] = ec._Setup_Audience(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "Domain":
+			out.Values[i] = ec._Setup_Domain(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1928,6 +2162,20 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 func (ec *executionContext) unmarshalNInput2hexarchᚋpkgᚋadaptersᚋleftᚋgqlᚋgraphᚋmodelᚐInput(ctx context.Context, v interface{}) (model.Input, error) {
 	res, err := ec.unmarshalInputInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSetup2hexarchᚋpkgᚋadaptersᚋleftᚋgqlᚋgraphᚋmodelᚐSetup(ctx context.Context, sel ast.SelectionSet, v model.Setup) graphql.Marshaler {
+	return ec._Setup(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSetup2ᚖhexarchᚋpkgᚋadaptersᚋleftᚋgqlᚋgraphᚋmodelᚐSetup(ctx context.Context, sel ast.SelectionSet, v *model.Setup) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Setup(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

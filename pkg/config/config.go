@@ -27,6 +27,7 @@ type Config struct {
 
 	HostName     string
 	FrontEndPath string
+	Debug        bool
 	Server       Server
 	GRPC         GRPC
 	Auth         Auth
@@ -47,8 +48,8 @@ type GRPC struct {
 
 type Auth struct {
 	Domain   string
+	Audience string
 	ClientID string
-	AuthKey  string
 	Secret   string
 }
 
@@ -114,6 +115,7 @@ func (c *Config) parseConfig(v *viper.Viper) error {
 	*c = Config{
 		HostName:     v.GetString("HOSTNAME"),
 		FrontEndPath: v.GetString("FRONT_END_PATH"),
+		Debug:        v.GetBool("DEBUG"),
 		Server: Server{
 			Origins: strings.Split(v.GetString("ORIGINS"), ","),
 			Host:    v.GetString("HOST"),
@@ -125,8 +127,8 @@ func (c *Config) parseConfig(v *viper.Viper) error {
 		},
 		Auth: Auth{
 			Domain:   v.GetString("AUTH0_DOMAIN"),
+			Audience: v.GetString("AUTH0_AUDIENCE"),
 			ClientID: v.GetString("AUTH0_CLIENT_ID"),
-			AuthKey:  v.GetString("AUTH0_KEY"),
 			Secret:   v.GetString("AUTH0_SECRET"),
 		},
 		NATS: NATS{
@@ -143,6 +145,10 @@ func (c *Config) parseConfig(v *viper.Viper) error {
 			Name:     v.GetString("DB_NAME"),
 			SSLMode:  v.GetString("DB_SSL_MODE"),
 		},
+	}
+
+	if c.Debug {
+		log.Println("WARNING: DEBUG Mode enabled!")
 	}
 
 	return nil
